@@ -1,27 +1,14 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+// Import the functions you need from the SDKs you need
 import {
-    getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, setDoc, onSnapshot, query, where, getDoc, deleteField
+    collection, addDoc, getDocs, doc, deleteDoc, updateDoc, setDoc, onSnapshot, query, where, getDoc, deleteField
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously,
+    createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously,
     reauthenticateWithCredential, EmailAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyAwpy2b-iqEtWlBeSJ0fsq8dwDNNHXKTZ8",
-    authDomain: "attendance-e4df0.firebaseapp.com",
-    projectId: "attendance-e4df0",
-    storageBucket: "attendance-e4df0.firebasestorage.app",
-    messagingSenderId: "206146056610",
-    appId: "1:206146056610:web:80b7190520ee75c45242fb",
-    measurementId: "G-H92QTE7YE2"
-};
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+import { app, db, auth, emailConfig } from "./firebase-config.js";
 
 // Global listeners for real-time data
 let studentsUnsubscribe = null;
@@ -920,8 +907,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Notification Logic ---
     function sendAttendanceEmail(person, status, time) {
         // Replace with your Service ID and Template ID from EmailJS
-        const serviceID = 'service_m3dzax8';
-        const templateID = 'template_fieitqe';
+        const serviceID = emailConfig.serviceId;
+        const templateID = emailConfig.templateId;
 
         const templateParams = {
             to_name: person.name,
