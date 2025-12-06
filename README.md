@@ -3,6 +3,8 @@
 
 ![Deploy Status](https://github.com/akash-mauryax/automatic-attendence/actions/workflows/deploy.yml/badge.svg)
 
+**Latest Deployment: Retrying with updated secrets...**
+
 Here is the project description broken down into key points:
 
 1. **Real-Time Facial Recognition**: Automates attendance using AI to detecting and verifying faces instantly.
