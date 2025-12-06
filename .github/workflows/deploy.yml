@@ -28,8 +28,10 @@ jobs:
         uses: actions/configure-pages@v5
         
       - name: Create Firebase Config
+        env:
+          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
         run: |
-          echo "${{ secrets.FIREBASE_CONFIG }}" > firebase-config.js
+          echo "$FIREBASE_CONFIG" > firebase-config.js
         shell: bash
 
       - name: Upload artifact
