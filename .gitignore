@@ -1,0 +1,9 @@
+# Firebase credentials
+firebase-config.js
+
+# Dependencies
+node_modules/
+
+# System Files
+.DS_Store
+Thumbs.db

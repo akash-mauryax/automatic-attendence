@@ -8,16 +8,9 @@ import {
     reauthenticateWithCredential, EmailAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyAwpy2b-iqEtWlBeSJ0fsq8dwDNNHXKTZ8",
-    authDomain: "attendance-e4df0.firebaseapp.com",
-    projectId: "attendance-e4df0",
-    storageBucket: "attendance-e4df0.firebasestorage.app",
-    messagingSenderId: "206146056610",
-    appId: "1:206146056610:web:80b7190520ee75c45242fb",
-    measurementId: "G-H92QTE7YE2"
-};
+
+// Import Firebase configuration
+import { firebaseConfig } from "./firebase-config.js";
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
