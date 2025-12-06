@@ -3,7 +3,7 @@
 
 ![Deploy Status](https://github.com/akash-mauryax/automatic-attendence/actions/workflows/deploy.yml/badge.svg)
 
-**Latest Deployment: Retrying with updated secrets...**
+**Latest Deployment: Final retry for secret update...**
 
 Here is the project description broken down into key points:
 
