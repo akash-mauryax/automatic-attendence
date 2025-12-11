@@ -423,10 +423,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return R * c;
     }
 
-    let TARGET_LAT = 28.679881; // Faculty Target
-    let TARGET_LNG = 77.510046;
-    let ADMIN_TARGET_LAT = 28.679881; // Administrator Target
-    let ADMIN_TARGET_LNG = 77.510046;
+    let TARGET_LAT = 28.682025; // Faculty Target - Updated
+    let TARGET_LNG = 77.508481;
+    let ADMIN_TARGET_LAT = 28.682025; // Administrator Target - Updated
+    let ADMIN_TARGET_LNG = 77.508481;
     let ALLOWED_RADIUS = 50; // meters
 
     // Helper to verify location for Faculty
