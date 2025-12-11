@@ -290,20 +290,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="date" id="student-attendance-date">
                 <button id="view-student-attendance-btn">View Historical</button>
             </div>
-            <h4>Mark Today's Attendance:</h4>
-            <div class="sub-menu">
-                <button class="sub-option" data-sub-content="mark-student-attendance-manual">Manually</button>
-            </div>
             <div id="student-attendance-sheet-container" class="available-list"></div>`,
         'faculty-attendance': `
             <h3>Faculty Attendance Dashboard</h3>
             <div class="attendance-options">
                 <input type="date" id="faculty-attendance-date">
                 <button id="view-faculty-attendance-btn">View Historical</button>
-            </div>
-            <h4>Mark Today's Attendance:</h4>
-            <div class="sub-menu">
-                <button class="sub-option" data-sub-content="mark-faculty-attendance-manual">Manually</button>
             </div>
             <div id="faculty-attendance-sheet-container" class="available-list"></div>`,
         'analytics': `
@@ -486,26 +478,20 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Error fetching geofencing settings:", error);
         }
     }
-    // Call immediately to load settings
-    fetchGeofencingSettings();
 
-    // AUTHENTICATION LOGIC
     onAuthStateChanged(auth, user => {
+        // Always listen effectively for public usage (anonymous or admin)
+        listenToStudents();
+        listenToFaculties();
+
         if (user && !user.isAnonymous) {
             // User is a logged-in administrator
             logoutBtn.style.display = 'block';
-            listenToStudents();
-            listenToFaculties();
             listenToAdministrators();
         } else {
             // User is anonymous or logged out
             logoutBtn.style.display = 'none';
-            // Stop listening to data to save reads
-            if (studentsUnsubscribe) studentsUnsubscribe();
-            if (facultiesUnsubscribe) facultiesUnsubscribe();
             if (administratorsUnsubscribe) administratorsUnsubscribe();
-            studentsCache = [];
-            facultiesCache = [];
             administratorsCache = [];
         }
 
@@ -513,30 +499,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!initialAuthChecked) {
             initialAuthChecked = true;
             const defaultContentId = 'face-attendance';
-            // ALWAYS show the face attendance page on initial load, regardless of auth state.
             updateMainContent(defaultContentId);
 
-            // Set the active menu item regardless
-            document.querySelector(`.menu - item[data - content - id="${defaultContentId}"]`).classList.add('active');
+            const defaultMenuItem = document.querySelector(`.menu-item[data-content-id="${defaultContentId}"]`);
+            if (defaultMenuItem) defaultMenuItem.classList.add('active');
         }
     });
 
     function renderLogin(targetContentId) {
         contentBox.innerHTML = `
-
             <form id="login-form" class="form-container">
                 <label for="adminEmailLogin">Email:</label>
                 <input type="email" id="adminEmailLogin" required>
-                    <label for="adminPasswordLogin">Password:</label>
-                    <input type="password" id="adminPasswordLogin" required>
-                        <button type="submit" class="form-button" style="width: 100%;">Login</button>
-                    </form>
-
-                    `;
+                <label for="adminPasswordLogin">Password:</label>
+                <input type="password" id="adminPasswordLogin" required>
+                <button type="submit" class="form-button" style="width: 100%;">Login</button>
+            </form>
+        `;
         document.getElementById('login-form').addEventListener('submit', (e) => {
             handleLogin(e, targetContentId);
         });
-
     }
 
 
@@ -578,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const table = `<table><thead><tr><th>S.No</th><th>Image</th><th>Name</th><th>Student ID</th><th>Branch/Sec</th><th>Attendance %</th><th>Actions</th></tr></thead><tbody>
-                        ${studentsCache.map((s, i) => `<tr>
+                ${studentsCache.map((s, i) => `<tr>
                 <td>${i + 1}</td>
                 <td><img src="${s.imageUrl}" alt="Student Image"></td>
                 <td>${s.name}</td><td>${s.studentId}</td><td>${s.studentBranch}</td>
@@ -589,7 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="delete-btn" data-type="student" data-id="${s.id}">Delete</button>
                 </div></td>
             </tr>`).join('')}
-                    </tbody></table>`;
+            </tbody></table>`;
         listDiv.innerHTML = table;
 
         studentsCache.forEach(async (student) => {
@@ -609,7 +591,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const table = `<table><thead><tr><th>S.No</th><th>Image</th><th>Name</th><th>Faculty ID</th><th>Phone</th><th>Attendance %</th><th>Actions</th></tr></thead><tbody>
-                        ${facultiesCache.map((f, i) => `<tr>
+                ${facultiesCache.map((f, i) => `<tr>
                 <td>${i + 1}</td>
                 <td><img src="${f.imageUrl}" alt="Faculty Image"></td>
                 <td>${f.name}</td><td>${f.facultyId}</td><td>${f.facultyPhone}</td>
@@ -619,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="delete-btn" data-type="faculty" data-id="${f.id}">Delete</button>
                 </div></td>
             </tr>`).join('')}
-                    </tbody></table>`;
+            </tbody></table>`;
         listDiv.innerHTML = table;
 
         facultiesCache.forEach(async (faculty) => {
@@ -639,7 +621,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const table = `<table><thead><tr><th>S.No</th><th>Image</th><th>Name</th><th>Email</th><th>Role</th><th>Attendance %</th><th>Actions</th></tr></thead><tbody>
-                        ${administratorsCache.map((a, i) => `<tr>
+                ${administratorsCache.map((a, i) => `<tr>
                 <td>${i + 1}</td>
                 <td><img src="${a.imageUrl}" alt="Admin Image"></td>
                 <td>${a.name}</td><td>${a.email}</td><td>${a.role}</td>
@@ -648,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="delete-btn" data-type="administrator" data-id="${a.id}">Delete</button>
                 </div></td>
             </tr>`).join('')}
-                    </tbody></table>`;
+            </tbody></table>`;
         listDiv.innerHTML = table;
 
         administratorsCache.forEach(async (admin) => {
@@ -801,12 +783,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateMainContent(`${type}-data`);
             } catch (error) {
                 showAlert(`Error saving data: ${error.message}`);
-                console.error("Save error:", error);
-            } finally {
-                loadingOverlay.style.display = 'none';
+                messageDiv.textContent = 'Camera access denied or not available.';
+                messageDiv.style.color = 'red';
             }
-        };
-    }
+        }
+    } // End setupAddFormListeners
 
     // --- ATTENDANCE LOGIC ---
     async function renderAttendanceSheet(date, type, containerId) {
@@ -846,13 +827,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const isEditable = date === today;
 
         let tableHTML = `<h4>Showing Attendance for: ${date} ${!isEditable && !containerId.includes('-manual-') ? '(View Only)' : ''}</h4>
-                    <table><thead><tr><th>S.No</th><th>Image</th><th>Name</th><th>${secondaryFieldHeader}</th>`;
+            <table><thead><tr><th>S.No</th><th>Image</th><th>Name</th><th>${secondaryFieldHeader}</th>`;
 
         if (type === 'faculty' || type === 'administrator') {
             tableHTML += `<th>Location</th>`;
         }
 
-        tableHTML += `<th>Status</th><th>Entry Time</th><th>Exit Time</th><th>Overall %</th><th>Actions</th></tr></thead><tbody>`;
+        tableHTML += `<th>Status</th><th>Entry Time</th><th>Exit Time</th><th>Overall %</th>`;
+
+        // Only render Actions column header if Administrator
+        if (type === 'administrator') {
+            tableHTML += `<th>Actions</th>`;
+        }
+
+        tableHTML += `</tr></thead><tbody>`;
 
         database.forEach((person, index) => {
             const record = dailyRecords[person.id];
@@ -867,32 +855,41 @@ document.addEventListener('DOMContentLoaded', () => {
             let rowStyle = '';
 
             if (status === 'Present' && entryTime !== '-' && exitTime === '-') {
-                // Logic for active session if needed in future
+                // Logic for active session
             }
 
-            const statusElement = isEditable
-                ? `<button class="status-toggle ${statusClass}" data-date="${date}" data-personid="${person.id}" data-type="${type}">${status}</button>`
-                : `<span class="status-toggle ${statusClass}" style="cursor: not-allowed;">${status}</span>`;
+            // Status Toggle Button logic
+            let statusElement;
+            if (type === 'administrator' && isEditable) {
+                statusElement = `<button class="status-toggle ${statusClass}" data-date="${date}" data-personid="${person.id}" data-type="${type}">${status}</button>`;
+            } else {
+                statusElement = `<span class="status-toggle ${statusClass}" style="cursor: default;">${status}</span>`;
+            }
 
             tableHTML += `<tr ${rowStyle}>
-                                    <td>${index + 1}</td>
-                                    <td><img src="${person.imageUrl}" alt="${person.name}"></td>
-                                    <td>${person.name}</td>
-                                    <td>${person[secondaryField]}</td>`;
+                            <td>${index + 1}</td>
+                            <td><img src="${person.imageUrl}" alt="${person.name}"></td>
+                            <td>${person.name}</td>
+                            <td>${person[secondaryField]}</td>`;
 
             if (type === 'faculty' || type === 'administrator') {
                 tableHTML += `<td>${location}</td>`;
             }
 
             tableHTML += `<td>${statusElement}${timeOverWarning}</td>
-                                    <td>${entryTime}</td>
-                                    <td>${exitTime}</td>
-                                    <td data-percentage-id="${person.id}"><span class="loader-small"></span></td>
-                                    <td>
-                                        <button class="edit-attendance-btn" data-date="${date}" data-personid="${person.id}" data-type="${type}" data-entry="${entryTime}" data-exit="${exitTime}">Edit</button>
-                                        <button class="delete-attendance-btn" data-date="${date}" data-personid="${person.id}" data-type="${type}">Delete</button>
-                                    </td>
-                                </tr>`;
+                            <td>${entryTime}</td>
+                            <td>${exitTime}</td>
+                            <td data-percentage-id="${person.id}"><span class="loader-small"></span></td>`;
+
+            // Render Actions cell only for Administrator
+            if (type === 'administrator') {
+                tableHTML += `<td>
+                    <button class="edit-attendance-btn" data-date="${date}" data-personid="${person.id}" data-type="${type}" data-entry="${entryTime}" data-exit="${exitTime}">Edit</button>
+                    <button class="delete-attendance-btn" data-date="${date}" data-personid="${person.id}" data-type="${type}">Delete</button>
+                </td>`;
+            }
+
+            tableHTML += `</tr>`;
         });
 
         tableHTML += '</tbody></table>';
@@ -905,20 +902,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 cell.textContent = percentage;
             }
         });
-
-        // startCountdownTimers();
     }
 
-    // function startCountdownTimers() {... } - Removed
     // --- Notification Logic ---
     function sendAttendanceEmail(person, status, time) {
-        // Replace with your Service ID and Template ID from EmailJS
         const serviceID = 'service_m3dzax8';
         const templateID = 'template_fieitqe';
 
         const templateParams = {
             to_name: person.name,
-            to_email: person.email || person.studentEmail || person.facultyEmail || 'parent@example.com', // Check all email fields
+            to_email: person.email || person.studentEmail || person.facultyEmail || 'parent@example.com',
             status: status,
             time: time,
             message: `Attendance marked as ${status} at ${time}.`
@@ -1403,28 +1396,42 @@ document.addEventListener('DOMContentLoaded', () => {
             editAttendanceModal.classList.add('visible');
         }
     });
-
     // --- Menu Item Click Handling ---
     menuItems.forEach(item => {
         item.addEventListener('click', async () => {
             const contentId = item.getAttribute('data-content-id');
-            const isFaceAttendanceTab = contentId === 'face-attendance';
+            const publicTabs = ['face-attendance', 'student-attendance', 'faculty-attendance'];
+            const isPublicTab = publicTabs.includes(contentId);
 
             menuItems.forEach(i => i.classList.remove('active'));
             item.classList.add('active');
 
-            // If a user is already logged in as an admin, sign them out before proceeding.
-            // This enforces re-authentication for every protected tab click.
-            if (auth.currentUser && !auth.currentUser.isAnonymous) {
-                await signOut(auth);
-            }
+            if (isPublicTab) {
+                // If the user is not logged in at all, sign in anonymously to allow data fetching
+                if (!auth.currentUser) {
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (error) {
+                        console.error("Anonymous login failed", error);
+                        showAlert("Error: Could not sign in anonymously to view this content.");
+                        return;
+                    }
+                }
 
-            if (isFaceAttendanceTab) {
-                // Always allow free access to the face attendance kiosk.
+                // If a user is already logged in as an admin, we DON'T sign them out anymore 
+                // when checking public tabs, to avoid annoyance. 
+                // Admin can view public tabs too.
+
                 updateMainContent(contentId);
             } else {
-                // For any other tab, always prompt for login.
-                renderLogin(contentId);
+                // For any other tab (Administrator, Analytics), always check for ADMIN login.
+                if (auth.currentUser && !auth.currentUser.isAnonymous) {
+                    // Already an admin
+                    updateMainContent(contentId);
+                } else {
+                    // Not an admin (anonymous or null) -> Show Login
+                    renderLogin(contentId);
+                }
             }
         });
     });
